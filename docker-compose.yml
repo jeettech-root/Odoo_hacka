@@ -1,0 +1,29 @@
+version: '3.8'
+services:
+  mongo:
+    image: mongo:6.0
+    container_name: vendorbridge-mongo
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    volumes:
+      - ./server/mongo-data:/data/db
+
+  server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    container_name: vendorbridge-server
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - MONGO_URI=mongodb://mongo:27017/vendorbridge
+      - JWT_SECRET=dev_secret_change_me
+    depends_on:
+      - mongo
+    volumes:
+      - ./server:/usr/src/app:rw
+      - /usr/src/app/node_modules
+    command: npm run dev

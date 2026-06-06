@@ -1,0 +1,241 @@
+{
+  "info": {
+    "name": "VendorBridge Auth + Vendors",
+    "_postman_id": "vendorbridge-auth-collection",
+    "description": "Collection for Auth and Vendors endpoints for VendorBridge. Includes example bodies, sample responses, and a test that stores JWT into an environment variable `jwt`.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Register User",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"John Doe\",\n  \"email\": \"john@example.com\",\n  \"password\": \"password123\",\n  \"role\": \"Admin\"\n}",
+          "options": { "raw": { "language": "json" } }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/auth/register",
+          "host": ["{{baseUrl}}"],
+          "path": ["api","auth","register"]
+        },
+        "description": "Create a new user. This endpoint expects a POST with JSON body."
+      },
+      "response": [
+        {
+          "name": "201 Created - sample",
+          "originalRequest": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/register"
+            }
+          },
+          "status": "Created",
+          "code": 201,
+          "_body": "{\n  \"message\": \"User registered\",\n  \"user\": {\n    \"name\": \"John Doe\",\n    \"email\": \"john@example.com\",\n    \"role\": \"Admin\",\n    \"isActive\": true,\n    \"_id\": \"60f7c9b9...\",\n    \"createdAt\": \"2026-06-06T00:00:00.000Z\",\n    \"updatedAt\": \"2026-06-06T00:00:00.000Z\"\n  }\n}",
+          "header": [ { "key": "Content-Type", "value": "application/json" } ]
+        }
+      ]
+    },
+    {
+      "name": "Login",
+      "request": {
+        "method": "POST",
+        "header": [ { "key": "Content-Type", "value": "application/json" } ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"john@example.com\",\n  \"password\": \"password123\"\n}",
+          "options": { "raw": { "language": "json" } }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/auth/login",
+          "host": ["{{baseUrl}}"],
+          "path": ["api","auth","login"]
+        },
+        "description": "Login returns a JWT token and basic user info. The collection test will save the token into environment variable `jwt`."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "// Save token to environment variable 'jwt' for subsequent requests",
+              "if (pm.response.code === 200) {",
+              "  try {",
+              "    var json = pm.response.json();",
+              "    if (json.token) { pm.environment.set('jwt', json.token); pm.test('Saved token to environment', function(){pm.expect(json.token).to.be.a('string');}); }",
+              "  } catch (e) { pm.test('Response JSON parse failed', function(){throw e;}); }",
+              "} else { pm.test('Login returned 200', function(){pm.expect(pm.response.code).to.eql(200);}); }"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "response": [
+        {
+          "name": "200 OK - sample",
+          "originalRequest": { "method": "POST", "header": [], "url": { "raw": "{{baseUrl}}/api/auth/login" } },
+          "status": "OK",
+          "code": 200,
+          "_body": "{\n  \"token\": \"<JWT_TOKEN_HERE>\",\n  \"user\": {\n    \"id\": \"60f7c9b9...\",\n    \"email\": \"john@example.com\",\n    \"name\": \"John Doe\",\n    \"role\": \"Admin\"\n  }\n}",
+          "header": [ { "key": "Content-Type", "value": "application/json" } ]
+        }
+      ]
+    },
+    {
+      "name": "Create Vendor",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{jwt}}" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"companyName\": \"Acme Supplies\",\n  \"gstNumber\": \"GSTIN12345\",\n  \"contactPerson\": \"Bob\",\n  \"email\": \"bob@acme.com\",\n  \"phone\": \"+15551234567\",\n  \"address\": \"123 Main St\",\n  \"category\": \"Office\",\n  \"status\": \"active\"\n}",
+          "options": { "raw": { "language": "json" } }
+        },
+        "url": { "raw": "{{baseUrl}}/api/vendors", "host": ["{{baseUrl}}"], "path": ["api","vendors"] }
+      }
+    },
+    {
+      "name": "Get All Vendors",
+      "request": { "method": "GET", "header": [ { "key": "Authorization", "value": "Bearer {{jwt}}" } ], "url": { "raw": "{{baseUrl}}/api/vendors" } }
+    },
+    {
+      "name": "Get Vendor By ID",
+      "request": { "method": "GET", "header": [ { "key": "Authorization", "value": "Bearer {{jwt}}" } ], "url": { "raw": "{{baseUrl}}/api/vendors/:id" } }
+    },
+    {
+      "name": "Update Vendor",
+      "request": {
+        "method": "PUT",
+        "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{jwt}}" } ],
+        "body": { "mode": "raw", "raw": "{ \"phone\": \"+15557654321\" }", "options": { "raw": { "language": "json" } } },
+        "url": { "raw": "{{baseUrl}}/api/vendors/:id" }
+      }
+    },
+    {
+      "name": "Delete Vendor",
+      "request": { "method": "DELETE", "header": [ { "key": "Authorization", "value": "Bearer {{jwt}}" } ], "url": { "raw": "{{baseUrl}}/api/vendors/:id" } }
+    },
+    {
+      "name": "Create RFQ",
+      "request": {
+        "method": "POST",
+        "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{jwt}}" } ],
+        "body": { "mode": "raw", "raw": "{\n  \"title\": \"Office Chairs RFQ\",\n  \"description\": \"Request for 50 ergonomic office chairs\",\n  \"productName\": \"Ergonomic Chair Model X\",\n  \"quantity\": 50,\n  \"unit\": \"pcs\",\n  \"deadline\": \"2026-07-01T00:00:00.000Z\",\n  \"assignedVendors\": [],\n  \"status\": \"open\"\n}", "options": { "raw": { "language": "json" } } , "description": "Create a new RFQ (Admin or ProcurementOfficer)" },
+        "url": { "raw": "{{baseUrl}}/api/rfqs", "host": ["{{baseUrl}}"], "path": ["api","rfqs"] }
+      }
+    },
+    {
+      "name": "Get All RFQs",
+      "request": { "method": "GET", "header": [ { "key": "Authorization", "value": "Bearer {{jwt}}" } ], "url": { "raw": "{{baseUrl}}/api/rfqs" } }
+    },
+    {
+      "name": "Get RFQ By ID",
+      "request": { "method": "GET", "header": [ { "key": "Authorization", "value": "Bearer {{jwt}}" } ], "url": { "raw": "{{baseUrl}}/api/rfqs/:id" } }
+    },
+    {
+      "name": "Update RFQ",
+      "request": {
+        "method": "PUT",
+        "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{jwt}}" } ],
+        "body": { "mode": "raw", "raw": "{ \"quantity\": 60 }", "options": { "raw": { "language": "json" } } },
+        "url": { "raw": "{{baseUrl}}/api/rfqs/:id" }
+      }
+    },
+    {
+      "name": "Assign Vendors to RFQ",
+      "request": {
+        "method": "POST",
+        "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{jwt}}" } ],
+        "body": { "mode": "raw", "raw": "{ \"assignedVendors\": [\"<VENDOR_ID_1>\", \"<VENDOR_ID_2>\"] }", "options": { "raw": { "language": "json" } } },
+        "url": { "raw": "{{baseUrl}}/api/rfqs/:id/assign-vendors" }
+      }
+    },
+    {
+      "name": "Delete RFQ",
+      "request": { "method": "DELETE", "header": [ { "key": "Authorization", "value": "Bearer {{jwt}}" } ], "url": { "raw": "{{baseUrl}}/api/rfqs/:id" } }
+    },
+    {
+      "name": "Protected Test",
+      "request": { "method": "GET", "header": [ { "key": "Authorization", "value": "Bearer {{jwt}}" } ], "url": { "raw": "{{baseUrl}}/api/test/protected" } }
+    }
+    ,
+    {
+      "name": "Submit Quotation (Vendor)",
+      "request": {
+        "method": "POST",
+        "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{jwt}}" } ],
+        "body": { "mode": "raw", "raw": "{\n  \"rfqId\": \"<RFQ_ID>\",\n  \"price\": 1234.5,\n  \"deliveryDays\": 7,\n  \"notes\": \"We can deliver in 7 days\"\n}", "options": { "raw": { "language": "json" } } },
+        "url": { "raw": "{{baseUrl}}/api/quotations", "host": ["{{baseUrl}}"], "path": ["api","quotations"] }
+      }
+    },
+    {
+      "name": "Update Quotation (Vendor)",
+      "request": { "method": "PUT", "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{jwt}}" } ], "body": { "mode": "raw", "raw": "{ \"price\": 1199.99 }", "options": { "raw": { "language": "json" } } }, "url": { "raw": "{{baseUrl}}/api/quotations/:id" } }
+    },
+    {
+      "name": "Get Quotations For RFQ (ProcurementOfficer)",
+      "request": { "method": "GET", "header": [ { "key": "Authorization", "value": "Bearer {{jwt}}" } ], "url": { "raw": "{{baseUrl}}/api/quotations/rfq/:rfqId?sortBy=price&order=asc&highlightLowest=true" } }
+    },
+    {
+      "name": "Compare Quotations (sort by deliveryDays)",
+      "request": { "method": "GET", "header": [ { "key": "Authorization", "value": "Bearer {{jwt}}" } ], "url": { "raw": "{{baseUrl}}/api/quotations/rfq/:rfqId?sortBy=deliveryDays&order=asc&highlightLowest=true" } }
+    }
+    ,
+    {
+      "name": "Request Approval (ProcurementOfficer)",
+      "request": {
+        "method": "POST",
+        "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{jwt}}" } ],
+        "body": { "mode": "raw", "raw": "{ \"quotationId\": \"<QUOTATION_ID>\", \"rfqId\": \"<RFQ_ID>\", \"remarks\": \"Please approve vendor X\" }", "options": { "raw": { "language": "json" } } },
+        "url": { "raw": "{{baseUrl}}/api/approvals", "host": ["{{baseUrl}}"], "path": ["api","approvals"] }
+      }
+    },
+    {
+      "name": "Get Pending Approvals (Manager)",
+      "request": { "method": "GET", "header": [ { "key": "Authorization", "value": "Bearer {{jwt}}" } ], "url": { "raw": "{{baseUrl}}/api/approvals/pending" } }
+    },
+    {
+      "name": "Approve (Manager)",
+      "request": { "method": "POST", "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{jwt}}" } ], "body": { "mode": "raw", "raw": "{ \"remarks\": \"Approved - proceed with PO\" }", "options": { "raw": { "language": "json" } } }, "url": { "raw": "{{baseUrl}}/api/approvals/:id/approve" } }
+    },
+    {
+      "name": "Reject (Manager)",
+      "request": { "method": "POST", "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{jwt}}" } ], "body": { "mode": "raw", "raw": "{ \"remarks\": \"Rejected due to price\" }", "options": { "raw": { "language": "json" } } }, "url": { "raw": "{{baseUrl}}/api/approvals/:id/reject" } }
+    }
+    ,
+    {
+      "name": "Generate Invoice from PO",
+      "request": {
+        "method": "POST",
+        "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{jwt}}" } ],
+        "body": { "mode": "raw", "raw": "{ \"poId\": \"<PO_ID>\" }", "options": { "raw": { "language": "json" } } },
+        "url": { "raw": "{{baseUrl}}/api/invoices/generate", "host": ["{{baseUrl}}"], "path": ["api","invoices","generate"] }
+      }
+    },
+    {
+      "name": "Get All Invoices",
+      "request": { "method": "GET", "header": [ { "key": "Authorization", "value": "Bearer {{jwt}}" } ], "url": { "raw": "{{baseUrl}}/api/invoices" } }
+    },
+    {
+      "name": "Get Invoice By ID",
+      "request": { "method": "GET", "header": [ { "key": "Authorization", "value": "Bearer {{jwt}}" } ], "url": { "raw": "{{baseUrl}}/api/invoices/:id" } }
+    },
+    {
+      "name": "Update Invoice Status",
+      "request": { "method": "POST", "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{jwt}}" } ], "body": { "mode": "raw", "raw": "{ \"status\": \"Sent\" }", "options": { "raw": { "language": "json" } } }, "url": { "raw": "{{baseUrl}}/api/invoices/:id/status" } }
+    }
+  ],
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:3000" },
+    { "key": "jwt", "value": "" }
+  ]
+}

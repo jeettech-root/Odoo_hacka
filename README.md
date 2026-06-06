@@ -2,27 +2,42 @@ VendorBridge
 
 Procurement & Vendor Management ERP
 
-VendorBridge is a procurement-focused ERP system that streamlines the complete procurement lifecycle, including RFQ creation, quotation bidding, approval workflows, purchase order generation, invoicing, PDF generation, and automated email notifications.
+VendorBridge is a procurement-focused ERP system designed to streamline the complete procurement lifecycle—from RFQ creation and vendor bidding to approvals, purchase orders, invoicing, PDF generation, and automated email notifications.
+
+---
+
+Contents
+
+"Overview" (#overview) •
+"Features" (#features) •
+"Workflow" (#procurement-workflow) •
+"User Roles" (#user-roles) •
+"Tech Stack" (#technology-stack) •
+"Installation" (#installation) •
+"Configuration" (#configuration) •
+"Project Structure" (#project-structure) •
+"Security" (#security-features) •
+"Future Scope" (#future-enhancements)
 
 ---
 
 Overview
 
-VendorBridge connects Procurement Officers, Vendors, Managers, and Administrators through a centralized platform for managing procurement operations efficiently.
+VendorBridge connects Procurement Officers, Vendors, Managers, and Administrators through a centralized procurement platform.
 
-The system simplifies the end-to-end procurement process:
+The application simplifies procurement operations by managing the complete workflow from quotation requests to final invoice generation.
 
 RFQ Creation
       ↓
 Vendor Quotations
       ↓
-Quotation Comparison
+Quotation Evaluation
       ↓
-Manager Approval
+Approval Process
       ↓
 Purchase Order Generation
       ↓
-Invoice Generation
+Invoice Creation
       ↓
 PDF & Email Delivery
 
@@ -30,82 +45,118 @@ PDF & Email Delivery
 
 Features
 
-- RFQ Management
-- Multi-Vendor Quotation Bidding
-- Quotation Comparison
+- Request for Quotation (RFQ) Management
+- Multi-Vendor Quotation Submission
+- Automated Bid Comparison
 - Best Bid Identification
-- Approval Workflow
+- Approval Workflow Management
 - Purchase Order Generation
 - GST-Based Invoice Generation
-- PDF Generation and Download
+- PDF Export Support
 - Automated Email Notifications
-- JWT Authentication
 - Role-Based Access Control (RBAC)
+- JWT Authentication
+- Secure API Access
 
 ---
 
 User Roles
 
-Role| Responsibilities
-Procurement Officer| Creates RFQs, assigns vendors, compares quotations, requests approvals, generates Purchase Orders and Invoices
-Vendor| Views assigned RFQs, submits quotations, updates quotations before deadlines, downloads Purchase Orders and Invoices
-Manager| Reviews quotations, provides remarks, approves or rejects procurement requests
-Admin| Manages users, permissions, configurations, templates, logs, and database records
+Procurement Officer
+
+Responsible for managing procurement activities:
+
+- Create and manage RFQs
+- Assign vendors
+- Compare quotations
+- Request approvals
+- Generate Purchase Orders
+- Generate Invoices
+
+Vendor
+
+Responsible for participating in procurement requests:
+
+- View assigned RFQs
+- Submit quotations
+- Update quotations before deadline
+- Download Purchase Orders
+- Download Invoices
+
+Manager
+
+Responsible for approval decisions:
+
+- Review quotations
+- Add remarks
+- Approve requests
+- Reject requests
+
+Administrator
+
+Responsible for system management:
+
+- Manage users
+- Manage permissions
+- Configure application settings
+- Maintain templates and logs
+- Monitor database records
 
 ---
 
 Procurement Workflow
 
-1. RFQ Creation
+Step 1 — RFQ Creation
 
-The Procurement Officer creates a Request for Quotation containing:
+The Procurement Officer creates an RFQ containing:
 
-- Product Details
+- Product Information
 - Quantity
 - Unit
 - Submission Deadline
-- Assigned Vendors
+- Vendor Assignment
 
-2. Multi-Vendor Bidding
+Step 2 — Vendor Quotation Submission
 
-Assigned vendors submit quotations containing:
+Assigned vendors submit quotations including:
 
-Field| Description
-Price| Vendor's quoted amount
-Delivery Time| Expected delivery period
-Remarks| Optional comments
+- Quoted Price
+- Delivery Timeline
+- Additional Remarks
 
-Vendors can modify their quotations until the RFQ deadline.
+Each vendor can submit a single quotation per RFQ and may update it before the deadline.
 
-3. Quotation Comparison
+Step 3 — Quotation Evaluation
 
-The system automatically compares all quotations and highlights the lowest qualified quotation as the Best Bid.
+The system compares all submitted quotations and automatically identifies the most competitive bid.
 
-4. Approval Request
+Best Bid = Lowest Qualified Quotation
 
-The Procurement Officer selects a quotation and forwards it to the Manager for approval.
+Step 4 — Approval Request
 
-5. Manager Review and Approval
+The selected quotation is forwarded to the Manager for review and approval.
 
-The Manager may:
+Step 5 — Manager Approval
 
-- Approve the request
-- Reject the request
-- Add review remarks
+The Manager can:
 
-Approved quotations receive the status:
+- Approve
+- Reject
+- Add Remarks
+
+Approved quotations receive the following status:
 
 Accepted
 
-6. Purchase Order Generation
+Step 6 — Purchase Order Generation
 
 Purchase Orders are generated from approved quotations.
 
-Purchase Order lifecycle:
+Purchase Order Lifecycle:
 
 Draft → Issued → Completed
 
-Purchase Order format:
+PO Number Format:
 
 PO-YYYY-XXXX
 
@@ -113,42 +164,68 @@ Example:
 
 PO-2026-0001
 
-7. Invoice Generation
+Step 7 — Invoice Generation
 
-Invoices can be generated from Issued or Completed Purchase Orders.
+Invoices can be generated for Issued or Completed Purchase Orders.
 
-Capabilities include:
+Supported capabilities:
 
 - GST Calculation
 - PDF Invoice Generation
 - Invoice Download
-- Email Delivery to Vendors
+- Vendor Email Delivery
 
 ---
 
 Technology Stack
 
-Layer| Technology
-Frontend| React.js, Vite
-Backend| Node.js, Express.js
-Database| MongoDB
-Authentication| JWT
-Email Service| Nodemailer
-PDF Generation| PDFKit
+Frontend
+
+- React.js
+- Vite
+- JavaScript
+
+Backend
+
+- Node.js
+- Express.js
+
+Database
+
+- MongoDB
+- MongoDB Atlas
+
+Supporting Services
+
+- JWT Authentication
+- Refresh Tokens
+- Nodemailer
+- PDFKit
 
 ---
 
-Prerequisites
+Installation
 
-Before running the project, ensure the following are installed:
+Clone Repository
 
-- Node.js v16 or higher
-- npm or yarn
-- MongoDB Atlas account (recommended)
+git clone <repository-url>
+cd vendorbridge
+
+Backend Setup
+
+cd server
+npm install
+npm run dev
+
+Frontend Setup
+
+cd frontend
+npm install
+npm run dev
 
 ---
 
-Environment Configuration
+Configuration
 
 Create a ".env" file inside the "server" directory.
 
@@ -169,27 +246,15 @@ SMTP_PASS=your_smtp_password
 
 ---
 
-Running the Project
-
-Backend
-
-cd server
-npm install
-npm run dev
-
-Frontend
-
-cd frontend
-npm install
-npm run dev
-
----
-
 Development URLs
 
-Service| URL
-Backend API| http://localhost:3000
-Frontend Application| http://localhost:5173
+Backend API
+
+http://localhost:3000
+
+Frontend Application
+
+http://localhost:5173
 
 ---
 
@@ -219,21 +284,24 @@ VendorBridge
 Security Features
 
 - JWT Authentication
-- Refresh Token Support
+- Refresh Token Mechanism
 - Password Hashing
 - Protected Routes
 - Role-Based Access Control
+- Secure API Authorization
 
 ---
 
 Future Enhancements
 
 - Procurement Analytics Dashboard
-- Vendor Performance Tracking
+- Vendor Performance Monitoring
+- Inventory Management Integration
 - Real-Time Notifications
-- Inventory Integration
+- Multi-Level Approval Workflow
 - Mobile Application Support
-- Multi-Organization Support
+- Multi-Organization Management
+- AI-Based Vendor Recommendations
 
 ---
 
@@ -244,7 +312,7 @@ Contributions are welcome.
 1. Fork the repository
 2. Create a feature branch
 3. Commit your changes
-4. Push your changes
+4. Push the branch
 5. Open a Pull Request
 
 ---
